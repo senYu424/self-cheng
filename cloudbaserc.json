@@ -1,0 +1,15 @@
+{
+  "envId": "liwen-test-0307-d2fomy65028e2f19",
+  "functionRoot": "cloudfunctions",
+  "functions": [
+    { "name": "getUserInfo" },
+    { "name": "getData" },
+    { "name": "getTodos" },
+    { "name": "login" },
+    { "name": "expense" },
+    { "name": "category" },
+    { "name": "saving" },
+    { "name": "task" },
+    { "name": "statistics" }
+  ]
+}
