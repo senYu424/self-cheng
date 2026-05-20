@@ -33,6 +33,12 @@
   background: #fafafa;
 }
 
+.form-input.readonly {
+  background: #f0f0f0;
+  border-color: #e0e0e0;
+  color: #666;
+}
+
 .form-textarea {
   width: 100%;
   height: 200rpx;
@@ -42,6 +48,12 @@
   font-size: 30rpx;
   box-sizing: border-box;
   background: #fafafa;
+}
+
+.form-textarea.readonly {
+  background: #f0f0f0;
+  border-color: #e0e0e0;
+  color: #666;
 }
 
 .char-count {
@@ -110,26 +122,4 @@
 
 .submit-btn.disabled {
   background: #ccc;
-}
-
-.btn-group {
-  margin-top: 40rpx;
-}
-
-.delete-btn {
-  width: 100%;
-  height: 96rpx;
-  background: #fff;
-  color: #ff6b6b;
-  font-size: 32rpx;
-  border-radius: 48rpx;
-  margin-top: 20rpx;
-  border: 2rpx solid #ff6b6b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.delete-btn::after {
-  border: none;
 }

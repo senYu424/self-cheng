@@ -6,8 +6,7 @@
     "pages/expenseList/expenseList",
     "pages/saving/saving",
     "pages/task/task",
-    "pages/task/addTask/addTask",
-    "pages/task/editTask/editTask",
+    "pages/task/taskForm/taskForm",
     "pages/statistics/statistics",
     "pages/profile/profile"
   ],
