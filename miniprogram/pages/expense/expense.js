@@ -9,6 +9,11 @@ Page({
   },
 
   onLoad() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.avatarUrl) {
+      wx.navigateTo({ url: '/pages/login/login' });
+      return;
+    }
     this.setData({ date: this.formatDate(new Date()) });
   },
 

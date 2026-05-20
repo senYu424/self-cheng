@@ -120,10 +120,13 @@ Page({
           icon: 'success'
         });
 
-        // 登录成功后跳转到首页
-        wx.switchTab({
-          url: '/pages/index/index'
-        });
+        // 登录成功后返回上一页，如果没有上一页则跳转到首页
+        const pages = getCurrentPages();
+        if (pages.length > 1) {
+          setTimeout(() => wx.navigateBack(), 1000);
+        } else {
+          setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 1000);
+        }
       } else {
         wx.showToast({
           title: result.result.message || '登录失败',

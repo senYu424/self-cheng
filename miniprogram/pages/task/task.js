@@ -17,28 +17,25 @@ Page({
   },
 
   checkLogin() {
-    console.log('checkLogin start');
     const userInfo = wx.getStorageSync('userInfo');
-    console.log('checkLogin userInfo:', userInfo);
     if (!userInfo || !userInfo.avatarUrl) {
-      console.log('checkLogin: no userInfo or no avatarUrl');
-      wx.hideTabBar();
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      setTimeout(() => {
-        wx.switchTab({ url: '/pages/index/index' });
-      }, 1500);
+      this.setData({ userInfo: null, isParent: false });
       return;
     }
-    wx.showTabBar();
     this.setData({
       userInfo,
       isParent: userInfo.role === 'parent'
     });
-    console.log('checkLogin: about to call loadTasks');
     this.loadTasks();
+  },
+
+  ensureLogin() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.avatarUrl) {
+      wx.navigateTo({ url: '/pages/login/login' });
+      return false;
+    }
+    return true;
   },
 
   formatDate(dateStr) {
@@ -123,6 +120,7 @@ Page({
   },
 
   goToAddTask() {
+    if (!this.ensureLogin()) return;
     wx.navigateTo({ url: '/pages/task/taskForm/taskForm' });
   },
 
