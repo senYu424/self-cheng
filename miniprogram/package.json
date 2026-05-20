@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@babel/runtime": "^7.29.2",
+    "@cloudbase/wx-cloud-client-sdk": "^1.8.8"
+  }
+}

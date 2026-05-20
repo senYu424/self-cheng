@@ -1,0 +1,80 @@
+<view class="container">
+  <view class="form-card">
+    <!-- 操作人（只读） -->
+    <view class="form-item">
+      <text class="form-label">发布人</text>
+      <view class="form-value readonly">
+        <image class="creator-avatar" src="{{creator.avatarUrl}}" mode="aspectFill"/>
+        <text class="creator-name">{{creator.nickName}}</text>
+      </view>
+    </view>
+
+    <!-- 时间 -->
+    <view class="form-item">
+      <text class="form-label">截止时间</text>
+      <picker mode="date" value="{{dueDate}}" bindchange="onDateChange">
+        <view class="form-value picker">{{dueDate || '请选择截止日期'}}</view>
+      </picker>
+    </view>
+
+    <!-- 任务名称 -->
+    <view class="form-item">
+      <text class="form-label">任务名称</text>
+      <input
+        class="form-input"
+        placeholder="请输入任务名称"
+        value="{{taskName}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <!-- 任务详情 -->
+    <view class="form-item">
+      <text class="form-label">任务详情</text>
+      <textarea
+        class="form-textarea"
+        placeholder="请描述任务的具体要求..."
+        value="{{taskDesc}}"
+        maxlength="200"
+        bindinput="onDescInput"
+      />
+      <text class="char-count">{{taskDesc.length || 0}}/200</text>
+    </view>
+
+    <!-- 执行人 -->
+    <view class="form-item">
+      <text class="form-label">执行人</text>
+      <picker bindchange="onAssigneeChange" value="{{assigneeIndex}}" range="{{familyMembers}}" range-key="nickName">
+        <view class="form-value picker">
+          <block wx:if="{{assignee}}">
+            <image wx:if="{{assignee.avatarUrl}}" class="assignee-avatar" src="{{assignee.avatarUrl}}" mode="aspectFill"/>
+            <text>{{assignee.nickName}}</text>
+          </block>
+          <text wx:else class="placeholder">请选择执行人</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 任务奖励 -->
+    <view class="form-item">
+      <text class="form-label">任务奖励（元）</text>
+      <input
+        class="form-input"
+        type="digit"
+        placeholder="0.00"
+        value="{{reward}}"
+        bindinput="onRewardInput"
+      />
+    </view>
+
+    <!-- 按钮组 -->
+    <view class="btn-group">
+      <button class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="updateTask" disabled="{{!canSubmit}}">
+        保存修改
+      </button>
+      <button class="delete-btn" bindtap="deleteTask">
+        删除任务
+      </button>
+    </view>
+  </view>
+</view>

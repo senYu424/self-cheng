@@ -1,0 +1,37 @@
+<view class="statistics-container">
+  <view class="section">
+    <view class="section-title">月度支出趋势</view>
+    <view class="chart-placeholder">
+      <text>图表区域 - 月度趋势</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">分类支出占比</view>
+    <view class="chart-placeholder">
+      <text>图表区域 - 分类饼图</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">成员支出对比</view>
+    <view class="chart-placeholder">
+      <text>图表区域 - 成员对比</text>
+    </view>
+  </view>
+
+  <view class="summary-cards">
+    <view class="summary-card">
+      <text class="summary-value">¥0.00</text>
+      <text class="summary-label">本月支出</text>
+    </view>
+    <view class="summary-card">
+      <text class="summary-value">0</text>
+      <text class="summary-label">记账笔数</text>
+    </view>
+    <view class="summary-card">
+      <text class="summary-value">¥0.00</text>
+      <text class="summary-label">日均支出</text>
+    </view>
+  </view>
+</view>

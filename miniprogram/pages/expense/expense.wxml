@@ -1,0 +1,53 @@
+<view class="expense-container">
+  <view class="amount-section">
+    <text class="label">金额</text>
+    <view class="amount-input">
+      <text class="currency">¥</text>
+      <input type="digit" value="{{amount}}" placeholder="0.00" bindinput="onAmountInput" />
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="form-item">
+      <text class="label">分类</text>
+      <view class="category-list">
+        <view class="category-item {{category === '餐饮' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="餐饮">餐饮</view>
+        <view class="category-item {{category === '交通' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="交通">交通</view>
+        <view class="category-item {{category === '购物' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="购物">购物</view>
+        <view class="category-item {{category === '娱乐' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="娱乐">娱乐</view>
+        <view class="category-item {{category === '教育' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="教育">教育</view>
+        <view class="category-item {{category === '医疗' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="医疗">医疗</view>
+        <view class="category-item {{category === '其他' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="其他">其他</view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">日期</text>
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="picker">{{date}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">备注</text>
+      <input placeholder="添加备注..." value="{{note}}" bindinput="onNoteInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">支付方式</text>
+      <radio-group bindchange="onPaymentChange">
+        <label><radio value="wechat" checked="{{paymentMethod === 'wechat'}}" />微信</label>
+        <label><radio value="alipay" checked="{{paymentMethod === 'alipay'}}" />支付宝</label>
+        <label><radio value="cash" checked="{{paymentMethod === 'cash'}}" />现金</label>
+        <label><radio value="other" checked="{{paymentMethod === 'other'}}" />其他</label>
+      </radio-group>
+    </view>
+
+    <view class="form-item">
+      <text class="label">家庭共享</text>
+      <switch checked="{{isShared}}" bindchange="onSharedChange" />
+    </view>
+  </view>
+
+  <button class="submit-btn" bindtap="submitExpense">保存</button>
+</view>

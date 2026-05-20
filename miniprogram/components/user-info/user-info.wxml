@@ -1,0 +1,31 @@
+<view class="user-info">
+  <block wx:if="{{avatarUrl && nickName}}">
+    <image class="avatar" src="{{avatarUrl}}" mode="aspectFill"/>
+    <text class="nickname">{{nickName}}</text>
+  </block>
+  <block wx:else>
+    <button 
+      class="get-user-btn" 
+      open-type="chooseAvatar" 
+      bind:chooseavatar="onChooseAvatar"
+    >
+      <image 
+        wx:if="{{tempAvatarUrl}}" 
+        class="avatar" 
+        src="{{tempAvatarUrl}}" 
+        mode="aspectFill"
+      />
+      <view wx:else class="avatar-placeholder">
+        <text class="placeholder-text">点击获取头像</text>
+      </view>
+    </button>
+    <input 
+      type="nickname" 
+      class="nickname-input" 
+      placeholder="请输入昵称"
+      value="{{tempNickName}}"
+      bind:input="onNicknameInput"
+      bind:blur="onNicknameChange"
+    />
+  </block>
+</view>

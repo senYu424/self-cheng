@@ -1,0 +1,87 @@
+.expense-list-container {
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.filter-bar {
+  display: flex;
+  background: #fff;
+  padding: 20rpx;
+  gap: 20rpx;
+}
+
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  color: #666;
+  background: #f5f5f5;
+}
+
+.filter-item.active {
+  background: #667eea;
+  color: #fff;
+}
+
+.expense-list {
+  padding: 20rpx;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.expense-left {
+  flex: 1;
+}
+
+.expense-category {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.expense-date {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+
+.expense-note {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.expense-right {
+  text-align: right;
+}
+
+.expense-amount {
+  font-size: 36rpx;
+  color: #ff4757;
+  font-weight: bold;
+  display: block;
+}
+
+.expense-member {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 80rpx 0;
+}

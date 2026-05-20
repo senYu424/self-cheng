@@ -1,0 +1,36 @@
+<view class="saving-container">
+  <view class="header">
+    <text class="title">存钱计划</text>
+    <button wx:if="{{isParent}}" class="add-btn" bindtap="goToAddGoal">+ 新建目标</button>
+  </view>
+
+  <view class="goal-list">
+    <view class="goal-card" wx:for="{{savingGoals}}" wx:key="_id">
+      <view class="goal-header">
+        <text class="goal-title">{{item.title}}</text>
+        <text class="goal-reward">{{item.reward}}</text>
+      </view>
+      
+      <view class="goal-progress">
+        <view class="progress-info">
+          <text class="progress-amount">¥{{item.currentAmount}}</text>
+          <text class="progress-target">/ ¥{{item.targetAmount}}</text>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{item.progressWidth}}%"></view>
+        </view>
+        <text class="progress-percent">{{item.progressPercent}}%</text>
+      </view>
+
+      <view class="goal-footer">
+        <text class="goal-status {{item.status}}">{{item.status === 'completed' ? '已完成' : '进行中'}}</text>
+        <text class="goal-child">{{item.childName}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{savingGoals.length === 0}}" class="empty-tip">
+      <text>还没有存钱目标</text>
+      <text wx:if="{{isParent}}">点击上方按钮为孩子创建第一个目标吧</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,141 @@
+.saving-container {
+  padding: 20rpx;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-btn {
+  background: #667eea;
+  color: #fff;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  padding: 16rpx 32rpx;
+  line-height: 1;
+}
+
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.goal-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.goal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.goal-reward {
+  font-size: 24rpx;
+  color: #667eea;
+  background: #f0f4ff;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+}
+
+.goal-progress {
+  margin-bottom: 20rpx;
+}
+
+.progress-info {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12rpx;
+}
+
+.progress-amount {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.progress-target {
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 8rpx;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background: #e0e0e0;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}
+
+.progress-percent {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.goal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goal-status {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+}
+
+.goal-status.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.goal-status.completed {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.goal-child {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 80rpx 0;
+}
+
+.empty-tip text {
+  display: block;
+  color: #999;
+  font-size: 28rpx;
+  margin-bottom: 16rpx;
+}

@@ -1,0 +1,112 @@
+.expense-container {
+  padding: 20rpx;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.amount-section {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.amount-section .label {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.amount-input {
+  display: flex;
+  align-items: center;
+  border-bottom: 2rpx solid #e0e0e0;
+  padding-bottom: 20rpx;
+}
+
+.currency {
+  font-size: 48rpx;
+  color: #333;
+  margin-right: 20rpx;
+}
+
+.amount-input input {
+  flex: 1;
+  font-size: 64rpx;
+  color: #333;
+}
+
+.form-section {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-item .label {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.category-item {
+  padding: 16rpx 32rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.category-item.active {
+  background: #667eea;
+  color: #fff;
+  border-color: #667eea;
+}
+
+.picker {
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.form-item input {
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+radio-group label {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-top: 40rpx;
+}

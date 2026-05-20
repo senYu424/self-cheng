@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "user-info": "/components/user-info/user-info"
+  },
+  "navigationBarTitleText": "首页"
+}

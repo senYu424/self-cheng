@@ -1,0 +1,84 @@
+<view class="container">
+  <view class="login-section">
+    <view class="login-card">
+      <text class="login-title">欢迎登录家庭记账</text>
+      <text class="login-subtitle">请完善以下信息开始使用</text>
+
+      <!-- 头像选择 -->
+      <button
+        class="avatar-btn"
+        open-type="chooseAvatar"
+        bind:chooseavatar="onChooseAvatar"
+      >
+        <image
+          wx:if="{{tempAvatarUrl}}"
+          class="avatar-img"
+          src="{{tempAvatarUrl}}"
+          mode="aspectFill"
+        />
+        <view wx:else class="avatar-placeholder">
+          <text class="avatar-icon">📷</text>
+          <text class="avatar-text">点击获取微信头像</text>
+        </view>
+      </button>
+
+      <!-- 昵称输入 -->
+      <view class="input-item">
+        <text class="input-label">昵称</text>
+        <input
+          type="nickname"
+          class="nickname-input"
+          placeholder="请输入或选择微信昵称"
+          value="{{tempNickName}}"
+          bind:input="onNicknameInput"
+          bind:blur="onNicknameChange"
+        />
+      </view>
+
+      <!-- 角色选择 -->
+      <view class="input-item">
+        <text class="input-label">身份</text>
+        <view class="role-selector">
+          <view
+            class="role-option {{role === 'parent' ? 'active' : ''}}"
+            bindtap="selectRole"
+            data-role="parent"
+          >
+            <text class="role-icon">👨‍👩‍👧</text>
+            <text class="role-text">家长</text>
+          </view>
+          <view
+            class="role-option {{role === 'child' ? 'active' : ''}}"
+            bindtap="selectRole"
+            data-role="child"
+          >
+            <text class="role-icon">🧒</text>
+            <text class="role-text">孩子</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 手机号输入 -->
+      <view class="input-item">
+        <text class="input-label">手机号（选填）</text>
+        <input
+          type="number"
+          class="nickname-input"
+          placeholder="请输入手机号"
+          value="{{phoneNumber}}"
+          maxlength="11"
+          bind:input="onPhoneInput"
+        />
+      </view>
+
+      <!-- 登录按钮 -->
+      <button
+        class="login-btn {{canLogin ? '' : 'disabled'}}"
+        bindtap="doLogin"
+        disabled="{{!canLogin}}"
+      >
+        确认登录
+      </button>
+    </view>
+  </view>
+</view>
