@@ -1,3 +1,5 @@
+const { formatDate } = require('../../../utils/util');
+
 Page({
   data: {
     isEdit: false,
@@ -62,8 +64,7 @@ Page({
       });
       if (result.result && result.result.success) {
         const task = result.result.data;
-        const d = new Date(task.dueDate);
-        const dueDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dueDate = formatDate(task.dueDate);
 
         const readOnly = task.status !== 'pending';
         this.setData({

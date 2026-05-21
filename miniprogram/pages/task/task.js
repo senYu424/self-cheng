@@ -1,3 +1,6 @@
+const { ensureLogin, formatDate } = require('../../utils/util');
+const { loginMixin } = require('../../utils/pageMixin');
+
 Page({
   data: {
     tasks: [],
@@ -6,44 +9,15 @@ Page({
     activeTab: 'all'
   },
 
-  onLoad() {
-    console.log('task onLoad');
-    this.checkLogin();
+  ...loginMixin,
+
+  onNotLoggedIn() {
+    this.setData({ userInfo: null, isParent: false });
   },
 
-  onShow() {
-    console.log('task onShow');
-    this.checkLogin();
-  },
-
-  checkLogin() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.avatarUrl) {
-      this.setData({ userInfo: null, isParent: false });
-      return;
-    }
-    this.setData({
-      userInfo,
-      isParent: userInfo.role === 'parent'
-    });
+  onLoggedIn(userInfo) {
+    this.setData({ isParent: userInfo.role === 'parent' });
     this.loadTasks();
-  },
-
-  ensureLogin() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.avatarUrl) {
-      wx.navigateTo({ url: '/pages/login/login' });
-      return false;
-    }
-    return true;
-  },
-
-  formatDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${month}-${day}`;
   },
 
   async loadTasks() {
@@ -63,7 +37,7 @@ Page({
         const tasks = result.result.data.map(item => ({
           ...item,
           statusText: statusMap[item.status] || item.status,
-          completedAt: this.formatDate(item.completedAt),
+          completedAt: formatDate(item.completedAt, 'MM-DD'),
           translateX: 0
         }));
         console.log('loadTasks tasks:', tasks);
@@ -120,7 +94,7 @@ Page({
   },
 
   goToAddTask() {
-    if (!this.ensureLogin()) return;
+    if (!ensureLogin('请先登录后再发布任务')) return;
     wx.navigateTo({ url: '/pages/task/taskForm/taskForm' });
   },
 

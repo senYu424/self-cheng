@@ -1,3 +1,5 @@
+const { loginMixin } = require('../../utils/pageMixin');
+
 Page({
   data: {
     savingGoals: [],
@@ -5,24 +7,14 @@ Page({
     isParent: false
   },
 
-  onLoad() {
-    this.checkLogin();
+  ...loginMixin,
+
+  onNotLoggedIn() {
+    this.setData({ userInfo: null, isParent: false });
   },
 
-  onShow() {
-    this.checkLogin();
-  },
-
-  checkLogin() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.avatarUrl) {
-      this.setData({ userInfo: null, isParent: false });
-      return;
-    }
-    this.setData({
-      userInfo,
-      isParent: userInfo.role === 'parent'
-    });
+  onLoggedIn(userInfo) {
+    this.setData({ isParent: userInfo.role === 'parent' });
     this.loadSavingGoals();
   },
 

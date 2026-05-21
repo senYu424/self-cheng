@@ -1,5 +1,6 @@
 <view class="profile-container">
-  <view class="user-card">
+  <!-- 已登录：用户信息卡片 -->
+  <view class="user-card" wx:if="{{isLoggedIn}}">
     <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
     <view class="user-info">
       <text class="nickname">{{userInfo.nickname}}</text>
@@ -7,7 +8,16 @@
     </view>
   </view>
 
-  <view class="section">
+  <!-- 未登录：登录提示卡片 -->
+  <view class="login-card" wx:else>
+    <view class="login-icon">👤</view>
+    <view class="login-text">您还未登录</view>
+    <view class="login-desc">登录后可查看个人信息和家庭成员</view>
+    <view class="login-btn" bindtap="goToLogin">立即登录</view>
+  </view>
+
+  <!-- 家庭成员（仅登录显示） -->
+  <view class="section" wx:if="{{isLoggedIn}}">
     <view class="section-title">家庭成员</view>
     <view class="member-list">
       <view class="member-item" wx:for="{{familyMembers}}" wx:key="_id">
@@ -20,6 +30,7 @@
     </view>
   </view>
 
+  <!-- 设置（始终显示） -->
   <view class="section">
     <view class="section-title">设置</view>
     <view class="setting-list">
@@ -34,5 +45,6 @@
     </view>
   </view>
 
-  <button class="logout-btn" bindtap="logout">退出登录</button>
+  <!-- 退出登录（仅登录显示） -->
+  <button class="logout-btn" wx:if="{{isLoggedIn}}" bindtap="logout">退出登录</button>
 </view>

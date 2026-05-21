@@ -1,23 +1,30 @@
 <view class="expense-list-container">
-  <view class="filter-bar">
-    <view class="filter-item {{filter === 'all' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="all">全部</view>
-    <view class="filter-item {{filter === 'today' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="today">今日</view>
-    <view class="filter-item {{filter === 'week' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="week">本周</view>
-    <view class="filter-item {{filter === 'month' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="month">本月</view>
+  <view class="filter-bar {{!isLoggedIn ? 'disabled' : ''}}">
+    <view class="filter-item {{filter === 'all' && isLoggedIn ? 'active' : ''}}" bindtap="onFilterChange" data-filter="all">全部</view>
+    <view class="filter-item {{filter === 'today' && isLoggedIn ? 'active' : ''}}" bindtap="onFilterChange" data-filter="today">今日</view>
+    <view class="filter-item {{filter === 'week' && isLoggedIn ? 'active' : ''}}" bindtap="onFilterChange" data-filter="week">本周</view>
+    <view class="filter-item {{filter === 'month' && isLoggedIn ? 'active' : ''}}" bindtap="onFilterChange" data-filter="month">本月</view>
   </view>
 
   <view class="expense-list">
-    <view class="expense-item" wx:for="{{expenses}}" wx:key="_id">
-      <view class="expense-left">
-        <view class="expense-category">{{item.category}}</view>
-        <view class="expense-date">{{item.dateStr}}</view>
-        <view class="expense-note" wx:if="{{item.note}}">{{item.note}}</view>
-      </view>
-      <view class="expense-right">
-        <text class="expense-amount">-¥{{item.amount}}</text>
-        <text class="expense-member">{{item.memberName}}</text>
-      </view>
+    <view wx:if="{{!isLoggedIn}}" class="login-tip">
+      <view class="login-icon">🔒</view>
+      <view class="login-tip-text">登录后查看支出明细</view>
+      <view class="login-btn" bindtap="goToLogin">立即登录</view>
     </view>
-    <view wx:if="{{expenses.length === 0 && !loading}}" class="empty-tip">暂无支出记录</view>
+    <block wx:elif="{{expenses.length > 0}}">
+      <view class="expense-item" wx:for="{{expenses}}" wx:key="_id">
+        <view class="expense-left">
+          <view class="expense-category">{{item.category}}</view>
+          <view class="expense-date">{{item.dateStr}}</view>
+          <view class="expense-note" wx:if="{{item.note}}">{{item.note}}</view>
+        </view>
+        <view class="expense-right">
+          <text class="expense-amount">-¥{{item.amount}}</text>
+          <text class="expense-member">{{item.memberName}}</text>
+        </view>
+      </view>
+    </block>
+    <view wx:elif="{{!loading}}" class="empty-tip">暂无支出记录</view>
   </view>
 </view>

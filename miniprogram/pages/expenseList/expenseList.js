@@ -1,24 +1,21 @@
+const { showLoginModal, goToLogin, formatDate } = require('../../utils/util');
+const { loginMixin } = require('../../utils/pageMixin');
+
 Page({
   data: {
     expenses: [],
     filter: 'all',
-    loading: false
+    loading: false,
+    isLoggedIn: false
   },
 
-  onLoad() {
-    this.checkLogin();
+  ...loginMixin,
+
+  onNotLoggedIn() {
+    this.setData({ expenses: [] });
   },
 
-  onShow() {
-    this.checkLogin();
-  },
-
-  checkLogin() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.avatarUrl) {
-      this.setData({ expenses: [] });
-      return;
-    }
+  onLoggedIn() {
     this.loadExpenses();
   },
 
@@ -32,9 +29,8 @@ Page({
       if (result.result.success) {
         let allExpenses = result.result.data.map(item => ({
           ...item,
-          dateStr: this.formatDate(item.date || item.createdAt)
+          dateStr: formatDate(item.date || item.createdAt, 'YYYY-MM-DD HH:mm')
         }));
-        // 根据 filter 过滤数据
         const filtered = this.filterByDate(allExpenses, this.data.filter);
         this.setData({ expenses: filtered });
       }
@@ -43,16 +39,6 @@ Page({
     } finally {
       this.setData({ loading: false });
     }
-  },
-
-  formatDate(dateStr) {
-    const d = new Date(dateStr);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hour = String(d.getHours()).padStart(2, '0');
-    const minute = String(d.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hour}:${minute}`;
   },
 
   filterByDate(expenses, filter) {
@@ -69,7 +55,7 @@ Page({
       }
 
       if (filter === 'week') {
-        const dayOfWeek = today.getDay(); // 0=周日
+        const dayOfWeek = today.getDay();
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - dayOfWeek);
         return itemDate >= startOfWeek;
@@ -85,8 +71,14 @@ Page({
   },
 
   onFilterChange(e) {
+    if (!this.data.isLoggedIn) {
+      showLoginModal('请先登录后再查看明细');
+      return;
+    }
     const filter = e.currentTarget.dataset.filter;
     this.setData({ filter });
     this.loadExpenses();
-  }
+  },
+
+  goToLogin
 });

@@ -1,3 +1,5 @@
+const { checkLoginStatus, getUserInfo, showLoginModal, formatDate } = require('../../utils/util');
+
 Page({
   data: {
     isLoggedIn: false,
@@ -14,21 +16,18 @@ Page({
 
   onLoad() {
     this.setCurrentDate();
-    this.checkLoginStatus();
+    this.checkLogin();
   },
 
   onShow() {
-    this.checkLoginStatus();
-    if (this.data.isLoggedIn) {
-      this.loadExpenseData();
-    }
+    this.checkLogin();
   },
 
   setCurrentDate() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     const weekDay = weekDays[now.getDay()];
 
@@ -37,23 +36,19 @@ Page({
     });
   },
 
-  checkLoginStatus() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (userInfo && userInfo.avatarUrl && userInfo.nickName) {
-      this.setData({
-        isLoggedIn: true,
-        userInfo: userInfo
-      });
+  checkLogin() {
+    const isLoggedIn = checkLoginStatus();
+    this.setData({ isLoggedIn });
+    if (isLoggedIn) {
+      const userInfo = getUserInfo();
+      this.setData({ userInfo });
       this.loadExpenseData();
-    } else {
-      this.setData({ isLoggedIn: false });
     }
   },
 
   ensureLogin() {
-    const userInfo = wx.getStorageSync('userInfo');
-    if (!userInfo || !userInfo.avatarUrl || !userInfo.nickName) {
-      wx.navigateTo({ url: '/pages/login/login' });
+    if (!checkLoginStatus()) {
+      showLoginModal('请先登录后再记账');
       return false;
     }
     return true;
@@ -100,7 +95,7 @@ Page({
         recentList.push({
           category: item.category || '其他',
           amount: amount.toFixed(2),
-          time: this.formatTime(itemDate)
+          time: formatDate(itemDate, 'MM-DD HH:mm')
         });
       }
     });
@@ -112,13 +107,7 @@ Page({
     });
   },
 
-  formatTime(date) {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
-    return `${month}-${day} ${hour}:${minute}`;
-  },
+
 
   goToExpense() {
     if (!this.ensureLogin()) return;
