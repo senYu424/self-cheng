@@ -5,32 +5,39 @@
   </view>
 
   <view class="goal-list">
-    <view class="goal-card" wx:for="{{savingGoals}}" wx:key="_id">
-      <view class="goal-header">
-        <text class="goal-title">{{item.title}}</text>
-        <text class="goal-reward">{{item.reward}}</text>
-      </view>
-      
-      <view class="goal-progress">
-        <view class="progress-info">
-          <text class="progress-amount">¥{{item.currentAmount}}</text>
-          <text class="progress-target">/ ¥{{item.targetAmount}}</text>
+    <view wx:if="{{!isLoggedIn}}" class="login-tip">
+      <view class="login-icon">🔒</view>
+      <view class="login-tip-text">登录后查看存钱计划</view>
+      <view class="login-btn" bindtap="goToLogin">立即登录</view>
+    </view>
+    <block wx:else>
+      <view class="goal-card" wx:for="{{savingGoals}}" wx:key="_id">
+        <view class="goal-header">
+          <text class="goal-title">{{item.title}}</text>
+          <text class="goal-reward">{{item.reward}}</text>
         </view>
-        <view class="progress-bar">
-          <view class="progress-fill" style="width: {{item.progressWidth}}%"></view>
+
+        <view class="goal-progress">
+          <view class="progress-info">
+            <text class="progress-amount">¥{{item.currentAmount}}</text>
+            <text class="progress-target">/ ¥{{item.targetAmount}}</text>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.progressWidth}}%"></view>
+          </view>
+          <text class="progress-percent">{{item.progressPercent}}%</text>
         </view>
-        <text class="progress-percent">{{item.progressPercent}}%</text>
+
+        <view class="goal-footer">
+          <text class="goal-status {{item.status}}">{{item.status === 'completed' ? '已完成' : '进行中'}}</text>
+          <text class="goal-child">{{item.childName}}</text>
+        </view>
       </view>
 
-      <view class="goal-footer">
-        <text class="goal-status {{item.status}}">{{item.status === 'completed' ? '已完成' : '进行中'}}</text>
-        <text class="goal-child">{{item.childName}}</text>
+      <view wx:if="{{savingGoals.length === 0}}" class="empty-tip">
+        <text>还没有存钱目标</text>
+        <text wx:if="{{isParent}}">点击上方按钮为孩子创建第一个目标吧</text>
       </view>
-    </view>
-
-    <view wx:if="{{savingGoals.length === 0}}" class="empty-tip">
-      <text>还没有存钱目标</text>
-      <text wx:if="{{isParent}}">点击上方按钮为孩子创建第一个目标吧</text>
-    </view>
+    </block>
   </view>
 </view>

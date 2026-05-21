@@ -133,6 +133,35 @@
   padding: 80rpx 0;
 }
 
+.login-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 40rpx;
+}
+
+.login-icon {
+  font-size: 80rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
+.login-tip-text {
+  font-size: 30rpx;
+  color: #666;
+  margin-bottom: 50rpx;
+}
+
+.login-btn {
+  background: #667eea;
+  color: #fff;
+  font-size: 30rpx;
+  padding: 24rpx 100rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
 .empty-tip text {
   display: block;
   color: #999;

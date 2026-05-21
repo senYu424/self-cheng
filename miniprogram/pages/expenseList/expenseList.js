@@ -1,4 +1,4 @@
-const { showLoginModal, goToLogin, formatDate } = require('../../utils/util');
+const { showLoginModal, formatDate } = require('../../utils/util');
 const { loginMixin } = require('../../utils/pageMixin');
 
 Page({
@@ -80,5 +80,16 @@ Page({
     this.loadExpenses();
   },
 
-  goToLogin
+  goToLogin() {
+    wx.showModal({
+      title: '提示',
+      content: '是否前往登录？',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({ url: '/pages/login/login' });
+        }
+      }
+    });
+  }
 });

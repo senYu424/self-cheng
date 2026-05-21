@@ -42,5 +42,18 @@ Page({
 
   goToAddGoal() {
     wx.navigateTo({ url: '/pages/saving/addGoal' });
+  },
+
+  goToLogin() {
+    wx.showModal({
+      title: '提示',
+      content: '是否前往登录？',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({ url: '/pages/login/login' });
+        }
+      }
+    });
   }
 });
