@@ -18,11 +18,8 @@ Page({
   },
 
   onShow() {
-    // 每次显示页面时检查登录状态
     this.checkLoginStatus();
-
     if (this.data.isLoggedIn) {
-      wx.showTabBar();
       this.loadExpenseData();
     }
   },
@@ -49,13 +46,17 @@ Page({
       });
       this.loadExpenseData();
     } else {
-      // 未登录时跳转到登录页面
       this.setData({ isLoggedIn: false });
-      wx.hideTabBar();
-      wx.redirectTo({
-        url: '/pages/login/login'
-      });
     }
+  },
+
+  ensureLogin() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.avatarUrl || !userInfo.nickName) {
+      wx.navigateTo({ url: '/pages/login/login' });
+      return false;
+    }
+    return true;
   },
 
   async loadExpenseData() {
@@ -120,6 +121,7 @@ Page({
   },
 
   goToExpense() {
+    if (!this.ensureLogin()) return;
     wx.navigateTo({
       url: '/pages/expense/expense'
     });

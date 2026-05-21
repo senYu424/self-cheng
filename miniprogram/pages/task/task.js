@@ -7,32 +7,43 @@ Page({
   },
 
   onLoad() {
+    console.log('task onLoad');
     this.checkLogin();
   },
 
   onShow() {
+    console.log('task onShow');
     this.checkLogin();
   },
 
   checkLogin() {
     const userInfo = wx.getStorageSync('userInfo');
     if (!userInfo || !userInfo.avatarUrl) {
-      wx.hideTabBar();
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      setTimeout(() => {
-        wx.switchTab({ url: '/pages/index/index' });
-      }, 1500);
+      this.setData({ userInfo: null, isParent: false });
       return;
     }
-    wx.showTabBar();
     this.setData({
       userInfo,
       isParent: userInfo.role === 'parent'
     });
     this.loadTasks();
+  },
+
+  ensureLogin() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.avatarUrl) {
+      wx.navigateTo({ url: '/pages/login/login' });
+      return false;
+    }
+    return true;
+  },
+
+  formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${month}-${day}`;
   },
 
   async loadTasks() {
@@ -41,6 +52,7 @@ Page({
         name: 'tasks',
         data: { action: 'list' }
       });
+      console.log('loadTasks result:', result);
       if (result.result.success) {
         const statusMap = {
           pending: '待领取',
@@ -50,9 +62,14 @@ Page({
         };
         const tasks = result.result.data.map(item => ({
           ...item,
-          statusText: statusMap[item.status] || item.status
+          statusText: statusMap[item.status] || item.status,
+          completedAt: this.formatDate(item.completedAt),
+          translateX: 0
         }));
-        this.setData({ tasks });
+        console.log('loadTasks tasks:', tasks);
+        this.setData({ tasks: tasks || [] });
+      } else {
+        console.log('loadTasks success false:', result.result);
       }
     } catch (error) {
       console.error('获取任务列表失败:', error);
@@ -89,7 +106,13 @@ Page({
       });
       if (result.result.success) {
         wx.showToast({ title: '已办结，奖励已存入', icon: 'success' });
-        this.loadTasks();
+        const tasks = this.data.tasks.map(task => {
+          if (task._id === taskId) {
+            return { ...task, status: 'completed', statusText: '已完成' };
+          }
+          return task;
+        });
+        this.setData({ tasks });
       }
     } catch (error) {
       console.error('完成任务失败:', error);
@@ -97,11 +120,98 @@ Page({
   },
 
   goToAddTask() {
-    wx.navigateTo({ url: '/pages/task/addTask/addTask' });
+    if (!this.ensureLogin()) return;
+    wx.navigateTo({ url: '/pages/task/taskForm/taskForm' });
   },
 
   goToEditTask(e) {
+    e.stopPropagation();
     const taskId = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: '/pages/task/editTask/editTask?id=' + taskId });
+    wx.navigateTo({ url: '/pages/task/taskForm/taskForm?id=' + taskId });
+  },
+
+  goToTaskDetail(e) {
+    const taskId = e.currentTarget.dataset.id;
+    const status = e.currentTarget.dataset.status;
+    if (status !== 'pending') {
+      wx.navigateTo({ url: '/pages/task/taskForm/taskForm?id=' + taskId });
+    }
+  },
+
+  handleTouchStart(e) {
+    this.startX = e.touches[0].pageX;
+    const index = e.currentTarget.dataset.index;
+    const tasks = this.data.tasks.map((t, i) => {
+      if (i === index) return { ...t, transition: '' };
+      return { ...t, transition: 'transition: transform 0.3s ease;' };
+    });
+    this.setData({ tasks });
+  },
+
+  handleTouchMove(e) {
+    const moveX = e.touches[0].pageX;
+    const deltaX = moveX - this.startX;
+    const index = e.currentTarget.dataset.index;
+
+    if (deltaX > 0) return;
+
+    const deleteWidth = 140;
+    let translateX = deltaX;
+    if (translateX < -deleteWidth) translateX = -deleteWidth;
+
+    const tasks = this.data.tasks.map((t, i) => {
+      if (i === index) return { ...t, translateX };
+      return t;
+    });
+    this.setData({ tasks });
+  },
+
+  handleTouchEnd(e) {
+    const index = e.currentTarget.dataset.index;
+    const task = this.data.tasks[index];
+    const deleteWidth = 140;
+    let translateX = 0;
+
+    if (task.translateX < -deleteWidth / 2) {
+      translateX = -deleteWidth;
+    }
+
+    const tasks = this.data.tasks.map((t, i) => {
+      if (i === index) {
+        return { ...t, translateX, transition: 'transition: transform 0.3s ease;' };
+      }
+      return { ...t, translateX: 0, transition: 'transition: transform 0.3s ease;' };
+    });
+    this.setData({ tasks });
+  },
+
+  async deleteTask(e) {
+    e.stopPropagation();
+    const taskId = e.currentTarget.dataset.id;
+    const res = await wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，是否继续？'
+    });
+    if (!res.confirm) return;
+
+    wx.showLoading({ title: '删除中...' });
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'tasks',
+        data: { action: 'delete', taskId }
+      });
+      if (result.result && result.result.success) {
+        wx.showToast({ title: '已删除', icon: 'success' });
+        const tasks = this.data.tasks.filter(t => t._id !== taskId);
+        this.setData({ tasks });
+      } else {
+        wx.showToast({ title: result.result.message || '删除失败', icon: 'none' });
+      }
+    } catch (error) {
+      console.error('删除任务失败:', error);
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   }
 });

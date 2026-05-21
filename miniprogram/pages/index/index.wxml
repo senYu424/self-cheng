@@ -1,16 +1,15 @@
 <view class="container">
-  <!-- 已登录状态：显示首页内容 -->
   <view class="home-content">
     <!-- 用户信息卡片 -->
     <view class="user-card">
       <image
         class="user-avatar"
-        src="{{userInfo.avatarUrl}}"
+        src="{{isLoggedIn ? userInfo.avatarUrl : 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"
         mode="aspectFill"
       />
       <view class="user-info">
-        <text class="user-name">{{userInfo.nickName}}</text>
-        <text class="user-phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
+        <text class="user-name">{{isLoggedIn ? userInfo.nickName : '游客'}}</text>
+        <text class="user-phone" wx:if="{{isLoggedIn && userInfo.phone}}">{{userInfo.phone}}</text>
         <text class="user-date">{{currentDate}}</text>
       </view>
     </view>

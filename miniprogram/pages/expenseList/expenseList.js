@@ -16,17 +16,9 @@ Page({
   checkLogin() {
     const userInfo = wx.getStorageSync('userInfo');
     if (!userInfo || !userInfo.avatarUrl) {
-      wx.hideTabBar();
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      setTimeout(() => {
-        wx.switchTab({ url: '/pages/index/index' });
-      }, 1500);
+      this.setData({ expenses: [] });
       return;
     }
-    wx.showTabBar();
     this.loadExpenses();
   },
 

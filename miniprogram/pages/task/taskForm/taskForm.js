@@ -1,5 +1,7 @@
 Page({
   data: {
+    isEdit: false,
+    readOnly: false,
     taskId: '',
     creator: {},
     dueDate: '',
@@ -21,8 +23,11 @@ Page({
     this.setData({ creator: userInfo });
 
     if (options.id) {
-      this.setData({ taskId: options.id });
+      this.setData({ isEdit: true, taskId: options.id });
+      wx.setNavigationBarTitle({ title: '编辑任务' });
       this.loadTaskDetail(options.id);
+    } else {
+      wx.setNavigationBarTitle({ title: '新建任务' });
     }
 
     this.loadFamilyMembers();
@@ -60,6 +65,7 @@ Page({
         const d = new Date(task.dueDate);
         const dueDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+        const readOnly = task.status !== 'pending';
         this.setData({
           taskName: task.title,
           taskDesc: task.description || '',
@@ -69,9 +75,14 @@ Page({
             openid: task.assigneeOpenid,
             nickName: task.assigneeName,
             avatarUrl: task.assigneeAvatar
-          }
+          },
+          readOnly
         });
-        this.checkCanSubmit();
+        if (readOnly) {
+          wx.setNavigationBarTitle({ title: '任务详情' });
+        } else {
+          this.checkCanSubmit();
+        }
       }
     } catch (error) {
       console.error('获取任务详情失败:', error);
@@ -81,20 +92,24 @@ Page({
   },
 
   onDateChange(e) {
+    if (this.data.readOnly) return;
     this.setData({ dueDate: e.detail.value });
     this.checkCanSubmit();
   },
 
   onNameInput(e) {
+    if (this.data.readOnly) return;
     this.setData({ taskName: e.detail.value });
     this.checkCanSubmit();
   },
 
   onDescInput(e) {
+    if (this.data.readOnly) return;
     this.setData({ taskDesc: e.detail.value });
   },
 
   onAssigneeChange(e) {
+    if (this.data.readOnly) return;
     const index = parseInt(e.detail.value);
     const member = this.data.familyMembers[index];
     this.setData({
@@ -105,6 +120,7 @@ Page({
   },
 
   onRewardInput(e) {
+    if (this.data.readOnly) return;
     this.setData({ reward: e.detail.value });
   },
 
@@ -115,8 +131,9 @@ Page({
     });
   },
 
-  async updateTask() {
-    const { taskId, taskName, taskDesc, dueDate, assignee, reward } = this.data;
+  async submitTask() {
+    const { readOnly, isEdit, taskId, taskName, taskDesc, dueDate, assignee, reward, creator } = this.data;
+    if (readOnly) return;
 
     if (!taskName || !dueDate || !assignee) {
       wx.showToast({
@@ -126,27 +143,37 @@ Page({
       return;
     }
 
-    wx.showLoading({ title: '保存中...' });
+    const loadingText = isEdit ? '保存中...' : '发布中...';
+    const successText = isEdit ? '保存成功' : '发布成功';
+    wx.showLoading({ title: loadingText });
 
     try {
+      const params = {
+        action: isEdit ? 'update' : 'add',
+        title: taskName,
+        description: taskDesc,
+        dueDate: isEdit ? new Date(dueDate) : dueDate,
+        assigneeOpenid: assignee.openid,
+        assigneeName: assignee.nickname || assignee.nickName,
+        assigneeAvatar: assignee.avatarUrl,
+        reward: parseFloat(reward) || 0
+      };
+
+      if (isEdit) {
+        params.taskId = taskId;
+      } else {
+        params.creatorOpenid = creator.openid || '';
+        params.creatorName = creator.nickName;
+      }
+
       const result = await wx.cloud.callFunction({
         name: 'tasks',
-        data: {
-          action: 'update',
-          taskId,
-          title: taskName,
-          description: taskDesc,
-          dueDate: new Date(dueDate),
-          assigneeOpenid: assignee.openid,
-          assigneeName: assignee.nickname || assignee.nickName,
-          assigneeAvatar: assignee.avatarUrl,
-          reward: parseFloat(reward) || 0
-        }
+        data: params
       });
 
       if (result.result && result.result.success) {
         wx.showToast({
-          title: '保存成功',
+          title: successText,
           icon: 'success'
         });
         setTimeout(() => {
@@ -154,62 +181,18 @@ Page({
         }, 1500);
       } else {
         wx.showToast({
-          title: result.result.message || '保存失败',
+          title: result.result.message || (isEdit ? '保存失败' : '发布失败'),
           icon: 'none'
         });
       }
     } catch (error) {
-      console.error('更新任务失败:', error);
+      console.error(isEdit ? '更新任务失败:' : '发布任务失败:', error);
       wx.showToast({
-        title: '保存失败，请重试',
+        title: (isEdit ? '保存' : '发布') + '失败，请重试',
         icon: 'none'
       });
     } finally {
       wx.hideLoading();
     }
-  },
-
-  deleteTask() {
-    wx.showModal({
-      title: '确认删除',
-      content: '删除后无法恢复，是否继续？',
-      success: async (res) => {
-        if (res.confirm) {
-          wx.showLoading({ title: '删除中...' });
-          try {
-            const result = await wx.cloud.callFunction({
-              name: 'tasks',
-              data: {
-                action: 'delete',
-                taskId: this.data.taskId
-              }
-            });
-
-            if (result.result && result.result.success) {
-              wx.showToast({
-                title: '已删除',
-                icon: 'success'
-              });
-              setTimeout(() => {
-                wx.navigateBack();
-              }, 1500);
-            } else {
-              wx.showToast({
-                title: result.result.message || '删除失败',
-                icon: 'none'
-              });
-            }
-          } catch (error) {
-            console.error('删除任务失败:', error);
-            wx.showToast({
-              title: '删除失败',
-              icon: 'none'
-            });
-          } finally {
-            wx.hideLoading();
-          }
-        }
-      }
-    });
   }
 });

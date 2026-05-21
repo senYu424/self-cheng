@@ -12,30 +12,40 @@
   </view>
 
   <view class="task-list">
-    <view class="task-card" wx:for="{{tasks}}" wx:key="_id">
-      <view class="task-header">
-        <text class="task-title">{{item.title}}</text>
-        <text class="task-reward">+¥{{item.reward}}</text>
-      </view>
-      
-      <view class="task-desc" wx:if="{{item.description}}">{{item.description}}</view>
-      
-      <view class="task-footer">
-        <view class="task-info">
-          <text class="task-status {{item.status}}">{{item.statusText}}</text>
-          <text class="task-deadline">截止: {{item.deadline}}</text>
+    <view class="task-card-wrapper" wx:for="{{tasks}}" wx:key="_id">
+      <view class="task-card-main"
+            style="transform: translateX({{item.translateX || 0}}rpx); {{item.transition}}"
+            bindtouchstart="handleTouchStart"
+            bindtouchmove="handleTouchMove"
+            bindtouchend="handleTouchEnd"
+            data-index="{{index}}">
+        <view class="task-card {{item.status !== 'pending' ? 'readonly' : ''}}" bindtap="goToTaskDetail" data-id="{{item._id}}" data-status="{{item.status}}">
+          <view class="task-header">
+            <text class="task-title">{{item.title}}</text>
+            <text class="task-reward">+¥{{item.reward}}</text>
+          </view>
+
+          <view class="task-desc" wx:if="{{item.description}}">{{item.description}}</view>
+
+          <view class="task-footer">
+            <text class="task-deadline" wx:if="{{item.completedAt}}">截止: {{item.completedAt}}</text>
+            <view class="task-right">
+              <text class="task-status {{item.status}}">{{item.statusText}}</text>
+              <view class="task-actions">
+                <button wx:if="{{item.status === 'pending'}}" class="action-btn claim" catchtap="claimTask" data-id="{{item._id}}">领取</button>
+                <button wx:if="{{item.status === 'inProgress'}}" class="action-btn complete" catchtap="completeTask" data-id="{{item._id}}">办结</button>
+                <button wx:if="{{item.status === 'pending' && isParent}}" class="action-btn edit" catchtap="goToEditTask" data-id="{{item._id}}">编辑</button>
+                <!-- <button wx:if="{{item.status !== 'pending'}}" class="action-btn view" catchtap="goToEditTask" data-id="{{item._id}}">查看</button> -->
+              </view>
+            </view>
+          </view>
         </view>
-        
-        <view class="task-actions">
-          <button wx:if="{{item.status === 'pending'}}" class="action-btn claim" bindtap="claimTask" data-id="{{item._id}}">领取</button>
-          <button wx:if="{{item.status === 'inProgress'}}" class="action-btn complete" bindtap="completeTask" data-id="{{item._id}}">办结</button>
-          <button wx:if="{{item.status === 'pending' && isParent}}" class="action-btn edit" bindtap="goToEditTask" data-id="{{item._id}}">编辑</button>
-        </view>
       </view>
+      <view wx:if="{{item.status === 'pending'}}" class="task-delete" catchtap="deleteTask" data-id="{{item._id}}">删除</view>
     </view>
 
     <view wx:if="{{tasks.length === 0}}" class="empty-tip">
-      <text>暂无任务</text>
+      暂无任务
     </view>
   </view>
 </view>

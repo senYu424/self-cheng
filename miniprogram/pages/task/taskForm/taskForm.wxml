@@ -12,7 +12,8 @@
     <!-- 时间 -->
     <view class="form-item">
       <text class="form-label">截止时间</text>
-      <picker mode="date" value="{{dueDate}}" bindchange="onDateChange">
+      <view wx:if="{{readOnly}}" class="form-value readonly">{{dueDate || '-'}}</view>
+      <picker wx:else mode="date" value="{{dueDate}}" bindchange="onDateChange">
         <view class="form-value picker">{{dueDate || '请选择截止日期'}}</view>
       </picker>
     </view>
@@ -21,10 +22,11 @@
     <view class="form-item">
       <text class="form-label">任务名称</text>
       <input
-        class="form-input"
+        class="form-input {{readOnly ? 'readonly' : ''}}"
         placeholder="请输入任务名称，如：整理房间"
         value="{{taskName}}"
         bindinput="onNameInput"
+        disabled="{{readOnly}}"
       />
     </view>
 
@@ -32,19 +34,27 @@
     <view class="form-item">
       <text class="form-label">任务详情</text>
       <textarea
-        class="form-textarea"
+        class="form-textarea {{readOnly ? 'readonly' : ''}}"
         placeholder="请描述任务的具体要求和标准..."
         value="{{taskDesc}}"
         maxlength="200"
         bindinput="onDescInput"
+        disabled="{{readOnly}}"
       />
-      <text class="char-count">{{taskDesc.length || 0}}/200</text>
+      <text wx:if="{{!readOnly}}" class="char-count">{{taskDesc.length || 0}}/200</text>
     </view>
 
     <!-- 执行人 -->
     <view class="form-item">
       <text class="form-label">执行人</text>
-      <picker bindchange="onAssigneeChange" value="{{assigneeIndex}}" range="{{familyMembers}}" range-key="nickName">
+      <view wx:if="{{readOnly}}" class="form-value readonly">
+        <block wx:if="{{assignee}}">
+          <image wx:if="{{assignee.avatarUrl}}" class="assignee-avatar" src="{{assignee.avatarUrl}}" mode="aspectFill"/>
+          <text>{{assignee.nickName}}</text>
+        </block>
+        <text wx:else>-</text>
+      </view>
+      <picker wx:else bindchange="onAssigneeChange" value="{{assigneeIndex}}" range="{{familyMembers}}" range-key="nickName">
         <view class="form-value picker">
           <block wx:if="{{assignee}}">
             <image wx:if="{{assignee.avatarUrl}}" class="assignee-avatar" src="{{assignee.avatarUrl}}" mode="aspectFill"/>
@@ -59,17 +69,18 @@
     <view class="form-item">
       <text class="form-label">任务奖励（元）</text>
       <input
-        class="form-input"
+        class="form-input {{readOnly ? 'readonly' : ''}}"
         type="digit"
         placeholder="0.00"
         value="{{reward}}"
         bindinput="onRewardInput"
+        disabled="{{readOnly}}"
       />
     </view>
 
     <!-- 提交按钮 -->
-    <button class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="submitTask" disabled="{{!canSubmit}}">
-      发布任务
+    <button wx:if="{{!readOnly}}" class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="submitTask" disabled="{{!canSubmit}}">
+      {{isEdit ? '保存修改' : '发布任务'}}
     </button>
   </view>
 </view>
