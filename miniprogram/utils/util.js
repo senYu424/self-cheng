@@ -70,6 +70,10 @@ function formatDate(date, format = 'YYYY-MM-DD') {
   if (format === 'MM-DD HH:mm') {
     return `${month}-${day} ${hour}:${minute}`;
   }
+  if (format === 'YYYY-MM-DD HH:mm:ss') {
+    const second = String(d.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  }
   return `${year}-${month}-${day}`;
 }
 

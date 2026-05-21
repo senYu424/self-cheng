@@ -95,7 +95,7 @@ Page({
         recentList.push({
           category: item.category || '其他',
           amount: amount.toFixed(2),
-          time: formatDate(itemDate, 'MM-DD HH:mm')
+          time: formatDate(item.createdAt, 'YYYY-MM-DD HH:mm:ss')
         });
       }
     });
