@@ -20,6 +20,8 @@ Page({
     canSubmit: false
   },
 
+  _navigateTimer: null,
+
   onLoad(options) {
     const userInfo = wx.getStorageSync('userInfo');
     this.setData({ creator: userInfo });
@@ -33,6 +35,13 @@ Page({
     }
 
     this.loadFamilyMembers();
+  },
+
+  onUnload() {
+    if (this._navigateTimer) {
+      clearTimeout(this._navigateTimer);
+      this._navigateTimer = null;
+    }
   },
 
   async loadFamilyMembers() {
@@ -177,8 +186,10 @@ Page({
           title: successText,
           icon: 'success'
         });
-        setTimeout(() => {
-          wx.navigateBack();
+        this._navigateTimer = setTimeout(() => {
+          if (getCurrentPages().length > 1) {
+            wx.navigateBack();
+          }
         }, 1500);
       } else {
         wx.showToast({

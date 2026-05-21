@@ -34,7 +34,7 @@
             <view class="task-desc" wx:if="{{item.description}}">{{item.description}}</view>
 
             <view class="task-footer">
-              <text class="task-deadline" wx:if="{{item.completedAt}}">截止: {{item.completedAt}}</text>
+              <text class="task-deadline" wx:if="{{item.time}}">{{item.time}}</text>
               <view class="task-right">
                 <text class="task-status {{item.status}}">{{item.statusText}}</text>
                 <view class="task-actions">

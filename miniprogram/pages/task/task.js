@@ -5,14 +5,27 @@ Page({
   data: {
     tasks: [],
     userInfo: null,
+    isLoggedIn: false,
     isParent: false,
     activeTab: 'all'
   },
 
+  _isLoadingTasks: false,
+
   ...loginMixin,
 
+  onShow() {
+    if (!this.data.isLoggedIn) {
+      this.checkLogin();
+    }
+  },
+
+  onUnload() {
+    this._isLoadingTasks = false;
+  },
+
   onNotLoggedIn() {
-    this.setData({ userInfo: null, isParent: false });
+    this.setData({ userInfo: null, isParent: false, isLoggedIn: false, tasks: [] });
   },
 
   onLoggedIn(userInfo) {
@@ -21,12 +34,17 @@ Page({
   },
 
   async loadTasks() {
+    if (this._isLoadingTasks) return;
+    this._isLoadingTasks = true;
     try {
       const result = await wx.cloud.callFunction({
         name: 'tasks',
         data: { action: 'list' }
       });
-      console.log('loadTasks result:', result);
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      if (!currentPage || currentPage.route !== 'pages/task/task') return;
+
       if (result.result.success) {
         const statusMap = {
           pending: '待领取',
@@ -34,19 +52,21 @@ Page({
           awaitConfirm: '待确认',
           completed: '已完成'
         };
-        const tasks = result.result.data.map(item => ({
-          ...item,
-          statusText: statusMap[item.status] || item.status,
-          completedAt: formatDate(item.completedAt, 'MM-DD'),
-          translateX: 0
-        }));
-        console.log('loadTasks tasks:', tasks);
-        this.setData({ tasks: tasks || [] });
-      } else {
-        console.log('loadTasks success false:', result.result);
+        const tasks = result.result.data.map(item => {
+          const { createdAt, ...rest } = item;
+          return {
+            ...rest,
+            statusText: statusMap[item.status] || item.status,
+            time: formatDate(item.createdAt, 'YYYY-MM-DD HH:mm:ss'),
+            translateX: 0
+          };
+        });
+        this.setData({ tasks: tasks || [], isLoggedIn: true });
       }
     } catch (error) {
       console.error('获取任务列表失败:', error);
+    } finally {
+      this._isLoadingTasks = false;
     }
   },
 

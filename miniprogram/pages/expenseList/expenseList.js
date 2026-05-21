@@ -29,7 +29,7 @@ Page({
       if (result.result.success) {
         let allExpenses = result.result.data.map(item => ({
           ...item,
-          dateStr: formatDate(item.date || item.createdAt, 'YYYY-MM-DD HH:mm')
+          dateStr: formatDate(item.date || item.createdAt, 'YYYY-MM-DD HH:mm:ss')
         }));
         const filtered = this.filterByDate(allExpenses, this.data.filter);
         this.setData({ expenses: filtered });
