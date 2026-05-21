@@ -3,6 +3,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
+const _ = db.command;
 
 exports.main = async (event, context) => {
   const { action } = event;
@@ -17,7 +18,6 @@ exports.main = async (event, context) => {
       console.log('dueDate值:', dueDate, '类型:', typeof dueDate);
       console.log('reward值:', reward, '类型:', typeof reward);
 
-      // 检查必填字段
       if (!title) return { success: false, message: '任务名称不能为空' };
       if (!dueDate) return { success: false, message: '截止时间不能为空' };
 
@@ -40,6 +40,7 @@ exports.main = async (event, context) => {
         creatorOpenid: String(creatorOpenid || openid || ''),
         creatorName: String(creatorName || ''),
         status: 'pending',
+        _openid: openid,
         createdAt: db.serverDate(),
         updatedAt: db.serverDate()
       };
@@ -51,7 +52,12 @@ exports.main = async (event, context) => {
     }
 
     if (action === 'list') {
+      // 只能看到创建者或被分配者为自己的任务
       const result = await db.collection('tasks')
+        .where(_.or([
+          { creatorOpenid: openid },
+          { assigneeOpenid: openid }
+        ]))
         .orderBy('createdAt', 'desc')
         .get();
       return { success: true, data: result.data };
@@ -60,11 +66,22 @@ exports.main = async (event, context) => {
     if (action === 'get') {
       const { taskId } = event;
       const result = await db.collection('tasks').doc(taskId).get();
-      return { success: true, data: result.data };
+      const task = result.data;
+      // 验证权限：只能查看自己创建或被分配的任务
+      if (task.creatorOpenid !== openid && task.assigneeOpenid !== openid) {
+        return { success: false, message: '无权限查看此任务' };
+      }
+      return { success: true, data: task };
     }
 
     if (action === 'update') {
       const { taskId, title, description, dueDate, assigneeOpenid, assigneeName, assigneeAvatar, reward } = event;
+      // 验证权限：只能修改自己创建的任务
+      const task = await db.collection('tasks').doc(taskId).get();
+      if (task.data.creatorOpenid !== openid) {
+        return { success: false, message: '无权限修改此任务' };
+      }
+
       await db.collection('tasks').doc(taskId).update({
         data: {
           title,
@@ -82,12 +99,24 @@ exports.main = async (event, context) => {
 
     if (action === 'delete') {
       const { taskId } = event;
+      // 验证权限：只能删除自己创建的任务
+      const task = await db.collection('tasks').doc(taskId).get();
+      if (task.data.creatorOpenid !== openid) {
+        return { success: false, message: '无权限删除此任务' };
+      }
+
       await db.collection('tasks').doc(taskId).remove();
       return { success: true };
     }
 
     if (action === 'claim') {
       const { taskId } = event;
+      // 验证权限：只能领取分配给自己的任务
+      const task = await db.collection('tasks').doc(taskId).get();
+      if (task.data.assigneeOpenid !== openid) {
+        return { success: false, message: '无权限领取此任务' };
+      }
+
       await db.collection('tasks').doc(taskId).update({
         data: { status: 'inProgress', updatedAt: db.serverDate() }
       });
@@ -97,6 +126,11 @@ exports.main = async (event, context) => {
     if (action === 'complete') {
       const { taskId } = event;
       const task = await db.collection('tasks').doc(taskId).get();
+
+      // 验证权限：只能办结分配给自己的任务
+      if (task.data.assigneeOpenid !== openid) {
+        return { success: false, message: '无权限办结此任务' };
+      }
 
       // 更新任务状态为已完成
       await db.collection('tasks').doc(taskId).update({

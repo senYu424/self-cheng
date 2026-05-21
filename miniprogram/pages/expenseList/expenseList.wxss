@@ -77,6 +77,10 @@
   display: block;
 }
 
+.expense-amount.income {
+  color: #2ed573;
+}
+
 .expense-member {
   font-size: 24rpx;
   color: #999;

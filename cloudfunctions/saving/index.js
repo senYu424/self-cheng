@@ -6,6 +6,8 @@ const db = cloud.database();
 
 exports.main = async (event, context) => {
   const { action } = event;
+  const wxContext = cloud.getWXContext();
+  const openid = wxContext.OPENID;
 
   try {
     if (action === 'add') {
@@ -18,6 +20,7 @@ exports.main = async (event, context) => {
           childId,
           reward,
           status: 'active',
+          _openid: openid,
           createdAt: db.serverDate()
         }
       });
@@ -25,13 +28,21 @@ exports.main = async (event, context) => {
     }
 
     if (action === 'list') {
-      const result = await db.collection('savingGoals').get();
+      // 只能看到自己关联的存钱目标
+      const result = await db.collection('savingGoals')
+        .where({ childId: openid })
+        .get();
       return { success: true, data: result.data };
     }
 
     if (action === 'addAmount') {
       const { goalId, amount } = event;
       const goal = await db.collection('savingGoals').doc(goalId).get();
+      // 验证权限
+      if (goal.data.childId !== openid) {
+        return { success: false, message: '无权限操作此存钱目标' };
+      }
+
       const newAmount = goal.data.currentAmount + amount;
       
       await db.collection('savingGoals').doc(goalId).update({

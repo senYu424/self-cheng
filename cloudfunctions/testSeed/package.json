@@ -1,0 +1,9 @@
+{
+  "name": "testSeed",
+  "version": "1.0.0",
+  "description": "测试数据种子",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

@@ -1,8 +1,18 @@
 <view class="expense-container">
-  <view class="amount-section">
+  <!-- 支出/收入切换 -->
+  <view class="type-tabs">
+    <view class="tab-item {{type === 'expense' ? 'active expense' : ''}}" bindtap="onTypeChange" data-type="expense">
+      支出
+    </view>
+    <view class="tab-item {{type === 'income' ? 'active income' : ''}}" bindtap="onTypeChange" data-type="income">
+      收入
+    </view>
+  </view>
+
+  <view class="amount-section {{type}}">
     <text class="label">金额</text>
     <view class="amount-input">
-      <text class="currency">¥</text>
+      <text class="currency">{{type === 'expense' ? '-' : '+'}}¥</text>
       <input type="digit" value="{{amount}}" placeholder="0.00" bindinput="onAmountInput" />
     </view>
   </view>
@@ -11,13 +21,11 @@
     <view class="form-item">
       <text class="label">分类</text>
       <view class="category-list">
-        <view class="category-item {{category === '餐饮' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="餐饮">餐饮</view>
-        <view class="category-item {{category === '交通' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="交通">交通</view>
-        <view class="category-item {{category === '购物' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="购物">购物</view>
-        <view class="category-item {{category === '娱乐' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="娱乐">娱乐</view>
-        <view class="category-item {{category === '教育' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="教育">教育</view>
-        <view class="category-item {{category === '医疗' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="医疗">医疗</view>
-        <view class="category-item {{category === '其他' ? 'active' : ''}}" bindtap="onCategorySelect" data-category="其他">其他</view>
+        <view wx:for="{{type === 'expense' ? expenseCategories : incomeCategories}}" wx:key="*this"
+              class="category-item {{category === item ? 'active ' + type : ''}}"
+              bindtap="onCategorySelect" data-category="{{item}}">
+          {{item}}
+        </view>
       </view>
     </view>
 
@@ -33,7 +41,7 @@
       <input placeholder="添加备注..." value="{{note}}" bindinput="onNoteInput" />
     </view>
 
-    <view class="form-item">
+    <view class="form-item" wx:if="{{type === 'expense'}}">
       <text class="label">支付方式</text>
       <radio-group bindchange="onPaymentChange">
         <label><radio value="wechat" checked="{{paymentMethod === 'wechat'}}" />微信</label>
@@ -43,11 +51,11 @@
       </radio-group>
     </view>
 
-    <view class="form-item">
+    <view class="form-item" wx:if="{{type === 'expense'}}">
       <text class="label">家庭共享</text>
       <switch checked="{{isShared}}" bindchange="onSharedChange" />
     </view>
   </view>
 
-  <button class="submit-btn" bindtap="submitExpense">保存</button>
+  <button class="submit-btn {{type}}" bindtap="submitExpense">保存</button>
 </view>

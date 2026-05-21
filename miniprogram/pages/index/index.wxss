@@ -51,15 +51,15 @@
   color: rgba(255,255,255,0.8);
 }
 
-/* 支出概览 */
+/* 收支概览 - 2x2 网格 */
 .stats-section {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20rpx;
   margin-bottom: 30rpx;
 }
 
 .stat-card {
-  flex: 1;
   background: #fff;
   border-radius: 20rpx;
   padding: 30rpx;
@@ -67,12 +67,12 @@
   box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
 }
 
-.stat-card.today {
+.stat-card.expense {
   border-left: 6rpx solid #ff6b6b;
 }
 
-.stat-card.month {
-  border-left: 6rpx solid #667eea;
+.stat-card.income {
+  border-left: 6rpx solid #2ed573;
 }
 
 .stat-label {
@@ -83,9 +83,17 @@
 }
 
 .stat-amount {
-  font-size: 44rpx;
+  font-size: 40rpx;
   font-weight: bold;
   color: #333;
+}
+
+.stat-amount.expense {
+  color: #ff6b6b;
+}
+
+.stat-amount.income {
+  color: #2ed573;
 }
 
 /* 快捷操作 */
@@ -124,7 +132,7 @@
   color: #666;
 }
 
-/* 最近支出 */
+/* 最近收支 */
 .recent-section {
   background: #fff;
   border-radius: 20rpx;
@@ -187,4 +195,8 @@
   font-size: 32rpx;
   color: #ff6b6b;
   font-weight: bold;
+}
+
+.expense-amount.income {
+  color: #2ed573;
 }

@@ -3,6 +3,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
+const _ = db.command;
 
 exports.main = async (event, context) => {
   const { action } = event;
@@ -10,21 +11,28 @@ exports.main = async (event, context) => {
   const openid = wxContext.OPENID;
 
   try {
-    if (action === 'add') {
-      const { amount, category, date, note, paymentMethod, isShared } = event;
+    const getUserId = async () => {
       const user = await db.collection('users').where({ openid }).get();
-      const userId = user.data[0]._id;
+      return user.data.length > 0 ? user.data[0]._id : null;
+    };
+
+    if (action === 'add') {
+      const { type, amount, category, date, note, paymentMethod, isShared } = event;
+      const userId = await getUserId();
+      if (!userId) return { success: false, message: '用户未注册' };
 
       const result = await db.collection('expenses').add({
         data: {
+          type: type || 'expense',
           amount,
           category,
           date: new Date(date),
           note,
-          paymentMethod,
-          isShared,
+          paymentMethod: paymentMethod || '',
+          isShared: isShared || false,
           memberId: userId,
           createdBy: userId,
+          openid: openid,
           createdAt: db.serverDate()
         }
       });
@@ -32,7 +40,11 @@ exports.main = async (event, context) => {
     }
 
     if (action === 'list') {
+      const userId = await getUserId();
+      if (!userId) return { success: true, data: [] };
+
       const result = await db.collection('expenses')
+        .where({ memberId: userId })
         .orderBy('createdAt', 'desc')
         .get();
       return { success: true, data: result.data };
@@ -40,6 +52,14 @@ exports.main = async (event, context) => {
 
     if (action === 'delete') {
       const { expenseId } = event;
+      const userId = await getUserId();
+      if (!userId) return { success: false, message: '用户未注册' };
+
+      const record = await db.collection('expenses').doc(expenseId).get();
+      if (record.data.memberId !== userId) {
+        return { success: false, message: '无权限删除此记录' };
+      }
+
       await db.collection('expenses').doc(expenseId).remove();
       return { success: true };
     }

@@ -10,7 +10,7 @@ Page({
   ...loginMixin,
 
   onNotLoggedIn() {
-    this.setData({ userInfo: null, isParent: false });
+    this.setData({ userInfo: null, isParent: false, savingGoals: [] });
   },
 
   onLoggedIn(userInfo) {

@@ -9,7 +9,7 @@
   <view class="expense-list">
     <view wx:if="{{!isLoggedIn}}" class="login-tip">
       <view class="login-icon">🔒</view>
-      <view class="login-tip-text">登录后查看支出明细</view>
+      <view class="login-tip-text">登录后查看收支明细</view>
       <view class="login-btn" bindtap="goToLogin">立即登录</view>
     </view>
     <block wx:elif="{{expenses.length > 0}}">
@@ -20,11 +20,11 @@
           <view class="expense-note" wx:if="{{item.note}}">{{item.note}}</view>
         </view>
         <view class="expense-right">
-          <text class="expense-amount">-¥{{item.amount}}</text>
-          <text class="expense-member">{{item.memberName}}</text>
+          <text class="expense-amount {{item.type === 'income' ? 'income' : ''}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</text>
+          <text class="expense-member">{{item.type === 'income' ? '收入' : '支出'}}</text>
         </view>
       </view>
     </block>
-    <view wx:elif="{{!loading}}" class="empty-tip">暂无支出记录</view>
+    <view wx:elif="{{!loading}}" class="empty-tip">暂无收支记录</view>
   </view>
 </view>

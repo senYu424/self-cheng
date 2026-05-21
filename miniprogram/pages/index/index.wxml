@@ -14,15 +14,23 @@
       </view>
     </view>
 
-    <!-- 支出概览 -->
+    <!-- 收支概览 -->
     <view class="stats-section">
-      <view class="stat-card today">
+      <view class="stat-card expense">
         <text class="stat-label">今日支出</text>
-        <text class="stat-amount">¥{{todayExpense}}</text>
+        <text class="stat-amount expense">¥{{todayExpense}}</text>
       </view>
-      <view class="stat-card month">
+      <view class="stat-card income">
+        <text class="stat-label">今日收入</text>
+        <text class="stat-amount income">¥{{todayIncome}}</text>
+      </view>
+      <view class="stat-card expense">
         <text class="stat-label">本月支出</text>
-        <text class="stat-amount">¥{{monthExpense}}</text>
+        <text class="stat-amount expense">¥{{monthExpense}}</text>
+      </view>
+      <view class="stat-card income">
+        <text class="stat-label">本月收入</text>
+        <text class="stat-amount income">¥{{monthIncome}}</text>
       </view>
     </view>
 
@@ -46,10 +54,10 @@
       </view>
     </view>
 
-    <!-- 最近支出 -->
+    <!-- 最近收支 -->
     <view class="recent-section" wx:if="{{recentExpenses.length > 0}}">
       <view class="section-header">
-        <text class="section-title">最近支出</text>
+        <text class="section-title">最近收支</text>
         <text class="section-more" bindtap="goToExpenseList">查看更多 ></text>
       </view>
       <view class="expense-list">
@@ -58,7 +66,7 @@
             <text class="expense-category">{{item.category}}</text>
             <text class="expense-time">{{item.time}}</text>
           </view>
-          <text class="expense-amount">-¥{{item.amount}}</text>
+          <text class="expense-amount {{item.type === 'income' ? 'income' : ''}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</text>
         </view>
       </view>
     </view>

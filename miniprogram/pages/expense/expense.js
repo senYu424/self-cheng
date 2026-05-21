@@ -2,12 +2,15 @@ const { formatDate } = require('../../utils/util');
 
 Page({
   data: {
+    type: 'expense',
     amount: '',
     category: '',
     date: '',
     note: '',
     paymentMethod: 'wechat',
-    isShared: false
+    isShared: false,
+    expenseCategories: ['餐饮', '交通', '购物', '娱乐', '教育', '医疗', '住房', '其他'],
+    incomeCategories: ['工资', '奖金', '兼职', '理财', '红包', '退款', '其他']
   },
 
   onLoad() {
@@ -17,6 +20,11 @@ Page({
       return;
     }
     this.setData({ date: formatDate(new Date()) });
+  },
+
+  onTypeChange(e) {
+    const type = e.currentTarget.dataset.type;
+    this.setData({ type, category: '' });
   },
 
   onAmountInput(e) {
@@ -44,7 +52,7 @@ Page({
   },
 
   async submitExpense() {
-    const { amount, category, date, note, paymentMethod, isShared } = this.data;
+    const { type, amount, category, date, note, paymentMethod, isShared } = this.data;
     if (!amount || !category) {
       wx.showToast({ title: '请填写完整信息', icon: 'none' });
       return;
@@ -55,6 +63,7 @@ Page({
         name: 'expense',
         data: {
           action: 'add',
+          type,
           amount: parseFloat(amount),
           category,
           date: new Date(date),

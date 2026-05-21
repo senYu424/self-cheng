@@ -1,4 +1,4 @@
-const { checkLoginStatus, getUserInfo, showLoginModal, formatDate } = require('../../utils/util');
+const { showLoginModal, formatDate } = require('../../utils/util');
 
 Page({
   data: {
@@ -10,24 +10,29 @@ Page({
     },
     currentDate: '',
     todayExpense: '0.00',
+    todayIncome: '0.00',
     monthExpense: '0.00',
+    monthIncome: '0.00',
     recentExpenses: []
   },
 
   onLoad() {
     this.setCurrentDate();
-    this.checkLogin();
+    this.checkLoginStatus();
   },
 
   onShow() {
-    this.checkLogin();
+    this.checkLoginStatus();
+    if (this.data.isLoggedIn) {
+      this.loadExpenseData();
+    }
   },
 
   setCurrentDate() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     const weekDay = weekDays[now.getDay()];
 
@@ -36,19 +41,49 @@ Page({
     });
   },
 
-  checkLogin() {
-    const isLoggedIn = checkLoginStatus();
-    this.setData({ isLoggedIn });
-    if (isLoggedIn) {
-      const userInfo = getUserInfo();
-      this.setData({ userInfo });
+  checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.avatarUrl && userInfo.nickName) {
+      this.setData({
+        isLoggedIn: true,
+        userInfo: userInfo
+      });
+      this.syncUserToCloud();
       this.loadExpenseData();
+    } else {
+      this.setData({
+        isLoggedIn: false,
+        userInfo: { avatarUrl: '', nickName: '', phone: '' },
+        todayExpense: '0.00',
+        todayIncome: '0.00',
+        monthExpense: '0.00',
+        monthIncome: '0.00',
+        recentExpenses: []
+      });
+    }
+  },
+
+  async syncUserToCloud() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo) return;
+    try {
+      await wx.cloud.callFunction({
+        name: 'login',
+        data: {
+          action: 'login',
+          userInfo: userInfo,
+          role: userInfo.role || 'parent'
+        }
+      });
+    } catch (e) {
+      console.error('同步用户信息失败', e);
     }
   },
 
   ensureLogin() {
-    if (!checkLoginStatus()) {
-      showLoginModal('请先登录后再记账');
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.avatarUrl || !userInfo.nickName) {
+      wx.navigateTo({ url: '/pages/login/login' });
       return false;
     }
     return true;
@@ -75,39 +110,45 @@ Page({
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    let todayTotal = 0;
-    let monthTotal = 0;
+    let todayExpense = 0;
+    let todayIncome = 0;
+    let monthExpense = 0;
+    let monthIncome = 0;
     const recentList = [];
 
     expenses.forEach(item => {
       const itemDate = new Date(item.date || item.createdAt);
       const amount = parseFloat(item.amount) || 0;
+      const isIncome = item.type === 'income';
 
       if (itemDate >= today) {
-        todayTotal += amount;
+        if (isIncome) todayIncome += amount;
+        else todayExpense += amount;
       }
 
       if (itemDate >= startOfMonth) {
-        monthTotal += amount;
+        if (isIncome) monthIncome += amount;
+        else monthExpense += amount;
       }
 
       if (recentList.length < 5) {
         recentList.push({
           category: item.category || '其他',
           amount: amount.toFixed(2),
+          type: item.type || 'expense',
           time: formatDate(item.createdAt, 'YYYY-MM-DD HH:mm:ss')
         });
       }
     });
 
     this.setData({
-      todayExpense: todayTotal.toFixed(2),
-      monthExpense: monthTotal.toFixed(2),
+      todayExpense: todayExpense.toFixed(2),
+      todayIncome: todayIncome.toFixed(2),
+      monthExpense: monthExpense.toFixed(2),
+      monthIncome: monthIncome.toFixed(2),
       recentExpenses: recentList
     });
   },
-
-
 
   goToExpense() {
     if (!this.ensureLogin()) return;
