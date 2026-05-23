@@ -121,10 +121,9 @@
 }
 
 .task-right {
-  display: flex;
-  align-items: center;
   gap: 16rpx;
   flex-shrink: 0;
+  margin-top: 15px;
 }
 
 .task-actions {
@@ -155,8 +154,8 @@
 }
 
 .task-status.awaitConfirm {
-  background: #fce4ec;
-  color: #c2185b;
+  background: #e8f5e9;
+  color: #388e3c;
 }
 
 .task-status.completed {
@@ -202,7 +201,8 @@
   opacity: 0.95;
 }
 
-.empty-tip {
+.empty-tip,
+.loading-tip {
   text-align: center;
   padding: 80rpx 0;
   color: #999;

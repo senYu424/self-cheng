@@ -41,7 +41,7 @@ Page({
   },
 
   goToAddGoal() {
-    wx.navigateTo({ url: '/pages/saving/addGoal' });
+    wx.navigateTo({ url: '/pages/saving/addGoal/addGoal' });
   },
 
   goToLogin() {

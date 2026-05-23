@@ -17,13 +17,13 @@ exports.main = async (event, context) => {
     };
 
     if (action === 'add') {
-      const { type, amount, category, date, note, paymentMethod, isShared } = event;
+      const { recordType, amount, category, date, note, paymentMethod, isShared } = event;
       const userId = await getUserId();
       if (!userId) return { success: false, message: '用户未注册' };
 
       const result = await db.collection('expenses').add({
         data: {
-          type: type || 'expense',
+          recordType: recordType || 'expense',
           amount,
           category,
           date: new Date(date),
@@ -47,7 +47,13 @@ exports.main = async (event, context) => {
         .where({ memberId: userId })
         .orderBy('createdAt', 'desc')
         .get();
-      return { success: true, data: result.data };
+
+      const data = result.data.map(item => ({
+        ...item,
+        recordType: item.recordType || item.type || 'expense'
+      }));
+
+      return { success: true, data };
     }
 
     if (action === 'delete') {

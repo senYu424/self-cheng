@@ -15,13 +15,15 @@
     <block wx:elif="{{expenses.length > 0}}">
       <view class="expense-item" wx:for="{{expenses}}" wx:key="_id">
         <view class="expense-left">
-          <view class="expense-category">{{item.category}}</view>
+          <view class="expense-category-wrap">
+            <view class="expense-category">{{item.category}}</view>
+            <view class="type-badge {{item.recordType === 'income' ? 'income' : 'expense'}}">{{item.recordType === 'income' ? '收入' : '支出'}}</view>
+          </view>
           <view class="expense-date">{{item.dateStr}}</view>
           <view class="expense-note" wx:if="{{item.note}}">{{item.note}}</view>
         </view>
         <view class="expense-right">
-          <text class="expense-amount {{item.type === 'income' ? 'income' : ''}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</text>
-          <text class="expense-member">{{item.type === 'income' ? '收入' : '支出'}}</text>
+          <text class="expense-amount {{item.recordType === 'income' ? 'income' : ''}}">{{item.recordType === 'income' ? '+' : '-'}}¥{{item.amountStr}}</text>
         </view>
       </view>
     </block>

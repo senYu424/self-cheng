@@ -11,13 +11,14 @@ exports.main = async (event, context) => {
 
   try {
     if (action === 'add') {
-      const { title, targetAmount, childId, reward } = event;
+      const { title, targetAmount, childId, reward, childName } = event;
       const result = await db.collection('savingGoals').add({
         data: {
           title,
           targetAmount,
           currentAmount: 0,
           childId,
+          childName: childName || '',
           reward,
           status: 'active',
           _openid: openid,

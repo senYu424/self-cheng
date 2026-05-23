@@ -179,11 +179,33 @@
   flex: 1;
 }
 
+.expense-category-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
 .expense-category {
   font-size: 30rpx;
   color: #333;
-  display: block;
-  margin-bottom: 8rpx;
+}
+
+.type-badge {
+  display: inline-block;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+}
+
+.type-badge.expense {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.type-badge.income {
+  color: #2ed573;
+  background: rgba(46, 213, 115, 0.1);
 }
 
 .expense-time {

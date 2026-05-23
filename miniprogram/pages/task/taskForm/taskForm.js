@@ -9,11 +9,7 @@ Page({
     dueDate: '',
     taskName: '',
     taskDesc: '',
-    familyMembers: [
-      { openid: 'mama', nickName: '妈妈', avatarUrl: '' },
-      { openid: 'baba', nickName: '爸爸', avatarUrl: '' },
-      { openid: 'yuer', nickName: '鱼儿', avatarUrl: '' }
-    ],
+    familyMembers: [],
     assigneeIndex: -1,
     assignee: null,
     reward: '',
@@ -51,11 +47,13 @@ Page({
         data: { action: 'getFamilyMembers' }
       });
       if (result.result.success && result.result.data.length > 0) {
-        const members = result.result.data.map(item => ({
-          openid: item.openid,
-          nickName: item.nickname || item.nickName || '未知',
-          avatarUrl: item.avatarUrl || ''
-        }));
+        const members = result.result.data
+          .map(item => ({
+            openid: item.openid,
+            nickName: item.nickname || item.nickName || '未知',
+            avatarUrl: item.avatarUrl || ''
+          }))
+          .filter(m => m.openid);
         this.setData({ familyMembers: members });
         return;
       }

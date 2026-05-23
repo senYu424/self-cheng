@@ -7,7 +7,9 @@ Page({
     userInfo: null,
     isLoggedIn: false,
     isParent: false,
-    activeTab: 'all'
+    activeTab: 'all',
+    isLoading: false,
+    filteredTasks: []
   },
 
   _isLoadingTasks: false,
@@ -36,6 +38,7 @@ Page({
   async loadTasks() {
     if (this._isLoadingTasks) return;
     this._isLoadingTasks = true;
+    this.setData({ isLoading: true });
     try {
       const result = await wx.cloud.callFunction({
         name: 'tasks',
@@ -49,7 +52,7 @@ Page({
         const statusMap = {
           pending: '待领取',
           inProgress: '进行中',
-          awaitConfirm: '待确认',
+          awaitConfirm: '已完成',
           completed: '已完成'
         };
         const tasks = result.result.data.map(item => {
@@ -62,43 +65,62 @@ Page({
           };
         });
         this.setData({ tasks: tasks || [], isLoggedIn: true });
+        this.filterTasks();
       }
     } catch (error) {
       console.error('获取任务列表失败:', error);
     } finally {
       this._isLoadingTasks = false;
+      this.setData({ isLoading: false });
     }
   },
 
   onTabChange(e) {
     const tab = e.currentTarget.dataset.tab;
     this.setData({ activeTab: tab });
+    this.filterTasks();
+  },
+
+  filterTasks() {
+    const { tasks, activeTab } = this.data;
+    if (activeTab === 'all') {
+      this.setData({ filteredTasks: tasks });
+    } else {
+      this.setData({ filteredTasks: tasks.filter(t => t.status === activeTab) });
+    }
   },
 
   async claimTask(e) {
     const taskId = e.currentTarget.dataset.id;
+    wx.showLoading({ title: '领取中...' });
     try {
       const result = await wx.cloud.callFunction({
         name: 'tasks',
         data: { action: 'claim', taskId }
       });
-      if (result.result.success) {
+      if (result.result && result.result.success) {
         wx.showToast({ title: '领取成功', icon: 'success' });
         this.loadTasks();
+      } else {
+        wx.showToast({ title: result.result?.message || '领取失败', icon: 'none' });
       }
     } catch (error) {
       console.error('领取任务失败:', error);
+      wx.showToast({ title: '领取失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
     }
   },
 
   async completeTask(e) {
     const taskId = e.currentTarget.dataset.id;
+    wx.showLoading({ title: '提交中...' });
     try {
       const result = await wx.cloud.callFunction({
         name: 'tasks',
         data: { action: 'complete', taskId }
       });
-      if (result.result.success) {
+      if (result.result && result.result.success) {
         wx.showToast({ title: '已办结，奖励已存入', icon: 'success' });
         const tasks = this.data.tasks.map(task => {
           if (task._id === taskId) {
@@ -107,9 +129,14 @@ Page({
           return task;
         });
         this.setData({ tasks });
+      } else {
+        wx.showToast({ title: result.result?.message || '提交失败', icon: 'none' });
       }
     } catch (error) {
       console.error('完成任务失败:', error);
+      wx.showToast({ title: '提交失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
     }
   },
 
@@ -132,7 +159,6 @@ Page({
   },
 
   goToEditTask(e) {
-    e.stopPropagation();
     const taskId = e.currentTarget.dataset.id;
     wx.navigateTo({ url: '/pages/task/taskForm/taskForm?id=' + taskId });
   },
@@ -193,7 +219,6 @@ Page({
   },
 
   async deleteTask(e) {
-    e.stopPropagation();
     const taskId = e.currentTarget.dataset.id;
     const res = await wx.showModal({
       title: '确认删除',

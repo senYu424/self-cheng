@@ -119,7 +119,8 @@ Page({
     expenses.forEach(item => {
       const itemDate = new Date(item.date || item.createdAt);
       const amount = parseFloat(item.amount) || 0;
-      const isIncome = item.type === 'income';
+      const recordType = item.recordType || item.type || 'expense';
+      const isIncome = recordType === 'income';
 
       if (itemDate >= today) {
         if (isIncome) todayIncome += amount;
@@ -135,7 +136,7 @@ Page({
         recentList.push({
           category: item.category || '其他',
           amount: amount.toFixed(2),
-          type: item.type || 'expense',
+          recordType: recordType,
           time: formatDate(item.createdAt, 'YYYY-MM-DD HH:mm:ss')
         });
       }

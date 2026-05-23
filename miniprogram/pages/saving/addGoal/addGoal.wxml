@@ -1,0 +1,35 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-item">
+      <text class="form-label">目标名称</text>
+      <input class="form-input" placeholder="请输入目标名称，如：买新玩具" value="{{title}}" bindinput="onTitleInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">目标金额（元）</text>
+      <input class="form-input" type="digit" placeholder="0.00" value="{{targetAmount}}" bindinput="onTargetInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">达成奖励</text>
+      <input class="form-input" placeholder="达成目标后的奖励，如：一次游乐园" value="{{reward}}" bindinput="onRewardInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">选择孩子</text>
+      <picker bindchange="onChildChange" value="{{childIndex}}" range="{{familyMembers}}" range-key="nickName">
+        <view class="form-value picker">
+          <block wx:if="{{child}}">
+            <image wx:if="{{child.avatarUrl}}" class="child-avatar" src="{{child.avatarUrl}}" mode="aspectFill"/>
+            <text>{{child.nickName}}</text>
+          </block>
+          <text wx:else class="placeholder">请选择孩子</text>
+        </view>
+      </picker>
+    </view>
+
+    <button class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="submitGoal" disabled="{{!canSubmit}}">
+      创建目标
+    </button>
+  </view>
+</view>

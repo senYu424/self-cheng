@@ -58,6 +58,7 @@ exports.main = async (event, context) => {
     if (myUserId) {
       await db.collection('expenses').add({
         data: {
+          recordType: 'expense',
           amount: 25.5,
           category: '餐饮',
           date: now,
@@ -73,6 +74,7 @@ exports.main = async (event, context) => {
 
       await db.collection('expenses').add({
         data: {
+          recordType: 'expense',
           amount: 100,
           category: '购物',
           date: now,

@@ -63,10 +63,13 @@
       <view class="expense-list">
         <view class="expense-item" wx:for="{{recentExpenses}}" wx:key="index">
           <view class="expense-info">
-            <text class="expense-category">{{item.category}}</text>
+            <view class="expense-category-wrap">
+              <text class="expense-category">{{item.category}}</text>
+              <view class="type-badge {{item.recordType === 'income' ? 'income' : 'expense'}}">{{item.recordType === 'income' ? '收入' : '支出'}}</view>
+            </view>
             <text class="expense-time">{{item.time}}</text>
           </view>
-          <text class="expense-amount {{item.type === 'income' ? 'income' : ''}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</text>
+          <text class="expense-amount {{item.recordType === 'income' ? 'income' : ''}}">{{item.recordType === 'income' ? '+' : '-'}}¥{{item.amount}}</text>
         </view>
       </view>
     </view>

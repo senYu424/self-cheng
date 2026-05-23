@@ -5,6 +5,7 @@
     "pages/expense/expense",
     "pages/expenseList/expenseList",
     "pages/saving/saving",
+    "pages/saving/addGoal/addGoal",
     "pages/task/task",
     "pages/task/taskForm/taskForm",
     "pages/statistics/statistics",

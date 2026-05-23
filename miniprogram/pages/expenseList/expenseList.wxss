@@ -81,11 +81,28 @@
   color: #2ed573;
 }
 
-.expense-member {
-  font-size: 24rpx;
-  color: #999;
-  margin-top: 8rpx;
-  display: block;
+.expense-category-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.type-badge {
+  display: inline-block;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.type-badge.expense {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.type-badge.income {
+  color: #2ed573;
+  background: rgba(46, 213, 115, 0.1);
 }
 
 .empty-tip {

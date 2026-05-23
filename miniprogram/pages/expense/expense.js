@@ -63,7 +63,7 @@ Page({
         name: 'expense',
         data: {
           action: 'add',
-          type,
+          recordType: type,
           amount: parseFloat(amount),
           category,
           date: new Date(date),
